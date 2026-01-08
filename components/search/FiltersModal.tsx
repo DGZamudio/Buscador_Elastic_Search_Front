@@ -6,19 +6,20 @@ import { ModalProps } from "@/types/search"
 
 export default function FiltersModal({
   open,
-  onClose,
+  onCancel,
+  onSave,
   children,
 }: ModalProps) {
   useEffect(() => {
     if (!open) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose()
+      if (e.key === "Escape") onCancel()
     }
 
     document.addEventListener("keydown", handleKeyDown)
     return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [open, onClose])
+  }, [open, onCancel])
 
   if (!open) return null
 
@@ -26,7 +27,7 @@ export default function FiltersModal({
     <div className="fixed inset-0 z-50">
         <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={onClose}
+            onClick={onCancel}
         />
 
         <div className="relative mx-auto mt-32 w-full max-w-lg">
@@ -42,8 +43,8 @@ export default function FiltersModal({
                     </h2>
 
                     <button
-                        onClick={onClose}
-                        className="text-stone-400 hover:text-white transition"
+                        onClick={onCancel}
+                        className="text-stone-400 hover:text-white transition cursor-pointer"
                     >
                         <X size="1.2em" />
                     </button>
@@ -55,21 +56,22 @@ export default function FiltersModal({
 
                 <div className="flex justify-end gap-3 px-6 py-4 border-t border-white/10">
                     <button
-                        onClick={onClose}
-                        className="text-sm text-stone-400 hover:text-white"
+                        onClick={onCancel}
+                        className="text-sm text-stone-400 hover:text-white cursor-pointer"
                     >
                         Cancelar
                     </button>
 
                     <button
-                        onClick={() => console.log(":o")}
+                        onClick={onSave}
                         className="
                             rounded-lg bg-[#7a1f1f]
                             px-4 py-2 text-sm font-medium
                             hover:bg-[#8c2a2a]
+                            cursor-pointer
                         "
                     >
-                        Buscar
+                        Aplicar
                     </button>
                 </div>
             </div>

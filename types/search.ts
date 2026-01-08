@@ -38,7 +38,8 @@ export interface SearchFilters {
 
 export interface ModalProps {
   open     : boolean;
-  onClose  : () => void;
+  onSave   : () => void;
+  onCancel : () => void;
   children : React.ReactNode;
 }
 
@@ -54,4 +55,15 @@ export interface FilterTextProps {
   onChange : (value: string) => void;
   clear    : () => void;
   label    : string;
+}
+
+export interface ResultsModalProps {
+  open     : boolean;
+  onClose  : () => void;
+  onRender : () => void;
+  children : React.ReactNode;
+}
+
+export interface LoaderProps {
+    visible : boolean;
 }

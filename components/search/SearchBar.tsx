@@ -11,11 +11,16 @@ function SearchBar({
     filterActive,
     placeholder = "Buscar en Atlas..."
 }: SearchBarProps) {
+    const handleSubmit = () => {
+        if (!value || value == "") return
+
+        onSubmit?.()
+    }
   return (
     <form 
         onSubmit={(e) => {
             e.preventDefault();
-            onSubmit?.();
+            handleSubmit()
         }}
         className="
             relative w-full max-w-5xl
@@ -44,26 +49,21 @@ function SearchBar({
                 "
             />
             <button
-                className="
+                className={`
                     flex items-center justify-center
                     px-5
                     hover:bg-[#7a1f1f] hover:text-white!
                     transition
                     border-l border-white/10
                     cursor-pointer
-                "
+                    ${filterActive ? "text-[#7a1f1f]" : "text-white"}
+                `}
                 onClick={onOpenFilters}
             >
                 {filterActive ? (
-                    <FunnelPlus 
-                        size="1.2em"
-                        className="text-[#7a1f1f]"
-                    />
+                    <FunnelPlus size="1.2em"/>
                 ) : (
-                    <Funnel 
-                        size="1.2em"
-                        className="text-white"
-                    />
+                    <Funnel size="1.2em"/>
                 )}
             </button>
             <button
@@ -75,7 +75,7 @@ function SearchBar({
                     border-l border-white/10
                     cursor-pointer
                 "
-                onClick={() => onSubmit?.()}
+                onClick={() => handleSubmit()}
             >
                 <Search
                     size="1.2em"

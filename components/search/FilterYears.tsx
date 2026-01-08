@@ -18,7 +18,11 @@ function FilterYears({
                 className="
                     border border-white/10
                     rounded p-2 w-1/3
-                    focus:ring-1
+                    focus:outline-none
+                    focus:ring-1 focus:ring-[#7a1f1f]
+                    focus:border-[#7a1f1f]
+                    transition
+                    duration-200
                 "
                 type="number"
             />
@@ -30,7 +34,11 @@ function FilterYears({
                 className="
                     border border-white/10
                     rounded p-2 w-1/3
-                    focus:ring-1
+                    focus:outline-none
+                    focus:ring-1 focus:ring-[#7a1f1f]
+                    focus:border-[#7a1f1f]
+                    transition
+                    duration-200
                 "
                 type="number"
             />

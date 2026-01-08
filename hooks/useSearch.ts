@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { regularSearch } from "@/services/search.service";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { regularSearch, semanticSearch } from "@/services/search.service";
 import { SearchFilters, SearchHit } from "@/types/search";
 
 export function useSearch() {
@@ -19,6 +19,25 @@ export function useSearch() {
     filters.yearFrom !== "" ||
     filters.yearTo !== ""
 
+    const memoizedFilters = useMemo(() => filters, [
+        filters.must,
+        filters.should,
+        filters.yearFrom,
+        filters.yearTo
+    ])
+
+    const memoizedUseSemanticSearch = useCallback(() => {
+        if (!query) {
+            setResults([]);
+            return;
+        }
+
+        setLoading(true)
+        semanticSearch(query, memoizedFilters, hasActiveFilters)
+        .then((data) => setResults(data))
+        .catch(console.error)
+        .finally(() => setLoading(false))
+    }, [query, memoizedFilters, hasActiveFilters])
 
   useEffect(() => {
     const delay = setTimeout(async () => {
@@ -29,7 +48,7 @@ export function useSearch() {
 
       setLoading(true);
       try {
-        const data = await regularSearch(query);
+        const data = await regularSearch(query, memoizedFilters, hasActiveFilters);
         setResults(data);
       } catch (error) {
         console.error(error);
@@ -39,7 +58,7 @@ export function useSearch() {
     }, 300); // debounce
 
     return () => clearTimeout(delay);
-  }, [query]);
+  }, [query, hasActiveFilters, memoizedFilters]);
 
   return {
     query,
@@ -48,6 +67,7 @@ export function useSearch() {
     setFilters,
     results,
     loading,
-    hasActiveFilters
+    hasActiveFilters,
+    memoizedUseSemanticSearch
   };
 }

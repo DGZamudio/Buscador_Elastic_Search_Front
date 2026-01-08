@@ -1,5 +1,5 @@
 "use client"
-import FilterText from "@/components/search/FilterMust";
+import FilterText from "@/components/search/FilterText";
 import FiltersModal from "@/components/search/FiltersModal";
 import FilterYears from "@/components/search/FilterYears";
 import SearchBar from "@/components/search/SearchBar";
@@ -7,6 +7,10 @@ import SearchResultsPanel from "@/components/search/SearchResultsPanel";
 import { useSearch } from "@/hooks/useSearch";
 import { BookSearch, Search } from "lucide-react";
 import { useState } from "react";
+import ResultsModal from "@/components/search/SearchResultsModal";
+import SearchResultsContent from "@/components/search/SearchResultsContent";
+import Loader from "@/components/ui/Loader";
+import NoResults from "@/components/ui/NoResults";
 
 export default function Home() {
   const {
@@ -16,10 +20,12 @@ export default function Home() {
     setFilters,
     results,
     loading,
-    hasActiveFilters
+    hasActiveFilters,
+    memoizedUseSemanticSearch
   } = useSearch();
 
-  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState<boolean>(false)
+  const [resultsOpen, setResultsOpen] = useState<boolean>(false)
 
   return (
     <div className="flex min-h-screen items-center justify-center font-sans bg-gradient-to-t from-[#7a1f1f] to-[#0f0f0f] to-50%">
@@ -36,29 +42,52 @@ export default function Home() {
                     value={query}
                     onChange={setQuery}
                     onOpenFilters={() => setFiltersOpen(true)}
+                    onSubmit={() => setResultsOpen(true)}
                     filterActive={hasActiveFilters}
                 />
 
-                {loading && (
-                    <div className="absolute top-full mt-2 flex items-center gap-1 text-sm text-stone-500">
-                        <p>
-                            Buscando
-                        </p>
-                        <Search size={"1em"}/>
-                    </div>
-                )}
+                <Loader visible={loading}/>
 
+                <NoResults visible={!loading && query.length > 0 && results.length == 0} />
 
                 <div className="absolute top-full mt-10 w-full max-w-5xl flex justify-center">
                     <SearchResultsPanel 
                         results={results}
-                        visible={results.length > 0 && query.length > 0}
+                        visible={!resultsOpen && results.length > 0 && query.length > 0}
                     />
                 </div>
 
+                <ResultsModal
+                    open={resultsOpen}
+                    onRender={memoizedUseSemanticSearch}
+                    onClose={() => setResultsOpen(false)}
+                >
+                    <div className="relative">
+                        <SearchResultsContent 
+                            results={results}
+                            visible={resultsOpen && results.length > 0 && query.length > 0 && !loading}
+                        />
+                        
+                        <Loader visible={loading}/>
+
+                        <NoResults visible={!loading && query.length > 0 && results.length == 0} />
+                    </div>
+                </ResultsModal>
+
                 <FiltersModal
                     open={filtersOpen}
-                    onClose={() => setFiltersOpen(false)}
+                    onSave={() => {
+                        setFiltersOpen(false)
+                    }}
+                    onCancel={() => {
+                        setFiltersOpen(false);
+                        setFilters({
+                            must: [],
+                            should: [],
+                            yearFrom:"",
+                            yearTo:""
+                        })
+                    }}
                 >
                     <FilterText
                         value={filters.must}
@@ -73,14 +102,14 @@ export default function Home() {
                         label="Debe contener estas palabras (separadas por espacios):"
                     />
                     <FilterText
-                        value={filters.must}
+                        value={filters.should}
                         onChange={(palabras) => setFilters(prev => ({
                             ...prev,
-                            must: palabras.split(" ")
+                            should: palabras.split(" ")
                         }))}
                         clear={() => setFilters(prev => ({
                             ...prev,
-                            must: []
+                            should: []
                         }))}
                         label="Puede contener estas palabras (separadas por espacios):"
                     />

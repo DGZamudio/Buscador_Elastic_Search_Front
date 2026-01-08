@@ -1,10 +1,10 @@
 import { SearchResultsProps } from "@/types/search";
+import Link from "next/link";
 
 export default function SearchResultsPanel({
   results,
   visible,
 }: SearchResultsProps) {
-    //href={`https://www.medellin.gov.co/normograma/docs/astrea/docs/${hit._source.Nombre}`}
   return (
     <div
         className={`
@@ -21,12 +21,14 @@ export default function SearchResultsPanel({
         `}
     >
         {results.slice(0,6).map((hit, index) => (
-            <div
+            <Link
                 key={index}
                 className="
+                    block
                     px-4 py-3 cursor-pointer
-                    hover:bg-white/5 transition
+                    hover:bg-white/15 transition
                 "
+                href={`https://www.medellin.gov.co/normograma/docs/astrea/docs/${hit._source.Numero}.htm`}
             >
                 <p className="font-medium">
                     {hit._source.title}
@@ -34,7 +36,7 @@ export default function SearchResultsPanel({
                 <p className="text-sm">
                     {hit._source.Entidad} · {hit._source.Year}
                 </p>
-            </div>
+            </Link>
         ))}
     </div>
   );

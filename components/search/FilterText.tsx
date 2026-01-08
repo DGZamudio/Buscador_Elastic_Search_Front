@@ -17,6 +17,11 @@ function FilterText({
                         rounded 
                         flex justify-evenly
                         w-full
+                        focus-within:outline-none
+                        focus-within:ring-1 focus-within:ring-[#7a1f1f]
+                        focus-within:border-[#7a1f1f]
+                        transition
+                        duration-200
                     ">
                 <input 
                     value={value.join(" ")}
