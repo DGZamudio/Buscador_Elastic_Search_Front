@@ -30,7 +30,7 @@ function FilterYears({
             <input 
                 value={yearTo}
                 onChange={(e) => onChangeyearTo(e.target.value)}
-                placeholder="Año inicial"
+                placeholder="Año final"
                 className="
                     border border-white/10
                     rounded p-2 w-1/3

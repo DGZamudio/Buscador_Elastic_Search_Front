@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { StepBack, StepForward, X } from "lucide-react"
+import { X } from "lucide-react"
 import { ResultsModalProps } from "@/types/search"
 
 export default function ResultsModal({

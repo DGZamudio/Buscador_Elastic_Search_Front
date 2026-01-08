@@ -58,6 +58,7 @@ function SearchBar({
                     cursor-pointer
                     ${filterActive ? "text-[#7a1f1f]" : "text-white"}
                 `}
+                type="button"
                 onClick={onOpenFilters}
             >
                 {filterActive ? (
