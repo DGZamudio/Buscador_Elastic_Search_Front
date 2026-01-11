@@ -6,6 +6,7 @@ import { ModalProps } from "@/types/search"
 
 export default function FiltersModal({
   open,
+  onClose,
   onCancel,
   onSave,
   children,
@@ -27,7 +28,7 @@ export default function FiltersModal({
     <div className="fixed inset-0 z-50">
         <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={onCancel}
+            onClick={onClose}
         />
 
         <div className="relative mx-auto mt-32 w-full max-w-lg">
@@ -43,14 +44,14 @@ export default function FiltersModal({
                     </h2>
 
                     <button
-                        onClick={onCancel}
+                        onClick={onClose}
                         className="text-stone-400 hover:text-white transition cursor-pointer"
                     >
                         <X size="1.2em" />
                     </button>
                 </div>
 
-                <div className="px-6 py-5">
+                <div className="flex flex-col gap-3 px-6 py-5">
                     {children}
                 </div>
 

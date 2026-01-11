@@ -20,7 +20,7 @@ export default function SearchResultsPanel({
             : "opacity-0 translate-y-2 pointer-events-none"}
         `}
     >
-        {results.slice(0,6).map((hit, index) => (
+        {results.slice(0, 5).map((hit, index) => (
             <Link
                 key={index}
                 className="

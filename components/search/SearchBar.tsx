@@ -1,13 +1,14 @@
 "use client"
 
 import { SearchBarProps } from "@/types/search";
-import { Funnel, FunnelPlus, Search } from "lucide-react";
+import { BrushCleaning, Funnel, FunnelPlus, Search } from "lucide-react";
 
 function SearchBar({
     value,
     onChange,
     onSubmit,
     onOpenFilters,
+    onCleanFilters,
     filterActive,
     placeholder = "Buscar en Atlas..."
 }: SearchBarProps) {
@@ -48,6 +49,23 @@ function SearchBar({
                     text-lg
                 "
             />
+            {filterActive && (
+                <button
+                    className="
+                        flex items-center justify-center
+                        px-5
+                        hover:bg-[#7a1f1f] hover:text-white!
+                        transition
+                        border-l border-white/10
+                        cursor-pointer
+                        text-[#7a1f1f]
+                    "
+                    type="button"
+                    onClick={onCleanFilters}
+                >
+                    <BrushCleaning size="1.2em"/>
+                </button>
+            )}
             <button
                 className={`
                     flex items-center justify-center

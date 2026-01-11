@@ -16,12 +16,13 @@ export interface SearchHit {
 }
 
 export interface SearchBarProps {
-    value         : string;
-    onChange      : (value: string) => void;
-    onSubmit?     : () => void;
-    onOpenFilters : () => void;
-    placeholder?  : string;
-    filterActive? : boolean;
+    value          : string;
+    onChange       : (value: string) => void;
+    onSubmit?      : () => void;
+    onOpenFilters  : () => void;
+    onCleanFilters : () => void;
+    placeholder?   : string;
+    filterActive?  : boolean;
 }
 
 export interface SearchResultsProps {
@@ -29,32 +30,102 @@ export interface SearchResultsProps {
   visible : boolean;
 };
 
+export interface SearchResultsResponse {
+    hits      : SearchHit[],
+    max_pages : number;
+}
+
+type ProximityFilter = {
+    distance? : number
+    query?    : string
+}
+type YearFilter = {
+    year_from? : string
+    year_to?   : string
+}
+
 export interface SearchFilters {
-  must     : string[];
-  should   : string[];
-  yearFrom : string;
-  yearTo   : string;
+    title?         : string
+    proximity?     : ProximityFilter
+    not_include?   : string[]
+    phrase?        : string
+    document_type? : string
+    must?          : string[]
+    should?        : string[]
+    years?         : YearFilter
+    entity?         : string
 }
 
 export interface ModalProps {
   open     : boolean;
   onSave   : () => void;
+  onClose  : () => void;
   onCancel : () => void;
   children : React.ReactNode;
 }
 
 export interface FilterYearsProps {
-  yearFrom         : string;
-  yearTo           : string;
-  onChangeyearFrom : (value: string) => void;
-  onChangeyearTo   : (value: string) => void;
+  yearFrom?        : string;
+  yearTo?          : string;
+  onChangeyearFrom : (value?: string) => void;
+  onChangeyearTo   : (value?: string) => void;
 }
 
 export interface FilterTextProps {
-  value    : string[];
-  onChange : (value: string) => void;
-  clear    : () => void;
-  label    : string;
+  value?      : string;
+  onChange    : (value: string) => void;
+  clear       : () => void;
+  label       : string;
+  placeholder : string;
+}
+
+// Filtros fragmentados jerarquicamente 
+type AggBucket = {
+  key       : string
+  doc_count : number
+}
+
+type FragmentedYear = {
+  key           : number
+  key_as_string : string
+  doc_count     : number
+}
+
+type FragmentedEntidad = AggBucket & {
+  year : {
+    buckets : FragmentedYear[]
+  }
+}
+
+type FragmentedTipo = AggBucket & {
+  entidad : {
+    doc_count_error_upper_bound : number
+    sum_other_doc_count         : number
+    buckets                     : FragmentedEntidad[]
+  }
+}
+
+export interface FragmentedFilters {
+  tipo : {
+    doc_count_error_upper_bound : number
+    sum_other_doc_count         : number
+    buckets                     : FragmentedTipo[]
+  }
+}
+// -> Filtros fragmentados jerarquicamente 
+
+export interface FragmentedFiltersProps {
+    fragments? : FragmentedFilters | null;
+    visible    : boolean;
+    onFilter   : (year:string, entidad:string, tipo:string) => void;
+    loading    : boolean;
+}
+
+export interface FilterNumberProps {
+  value?      : number;
+  onChange    : (value?: number) => void;
+  label       : string;
+  placeholder : string;
 }
 
 export interface ResultsModalProps {
@@ -62,6 +133,9 @@ export interface ResultsModalProps {
   onClose  : () => void;
   onRender : () => void;
   children : React.ReactNode;
+  page     : number;
+  pages    : number;
+  setPage  : (numero: number) => void;
 }
 
 export interface LoaderProps {

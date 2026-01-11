@@ -5,12 +5,14 @@ import FilterYears from "@/components/search/FilterYears";
 import SearchBar from "@/components/search/SearchBar";
 import SearchResultsPanel from "@/components/search/SearchResultsPanel";
 import { useSearch } from "@/hooks/useSearch";
-import { BookSearch, Search } from "lucide-react";
+import { BookSearch } from "lucide-react";
 import { useState } from "react";
 import ResultsModal from "@/components/search/SearchResultsModal";
 import SearchResultsContent from "@/components/search/SearchResultsContent";
 import Loader from "@/components/ui/Loader";
 import NoResults from "@/components/ui/NoResults";
+import FilterNumber from "@/components/search/FilterNumber";
+import FragmentedFilters from "@/components/search/FragmentedFiltersPanel";
 
 export default function Home() {
   const {
@@ -21,7 +23,13 @@ export default function Home() {
     results,
     loading,
     hasActiveFilters,
-    memoizedUseSemanticSearch
+    memoizedUseSemanticSearch,
+    fragmentedFilters,
+    loadingFragments,
+    page,
+    pages,
+    isTyping,
+    setPage
   } = useSearch();
 
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false)
@@ -43,6 +51,7 @@ export default function Home() {
                     onChange={setQuery}
                     onOpenFilters={() => setFiltersOpen(true)}
                     onSubmit={() => setResultsOpen(true)}
+                    onCleanFilters={() => setFilters({})}
                     filterActive={hasActiveFilters}
                 />
 
@@ -61,16 +70,53 @@ export default function Home() {
                     open={resultsOpen}
                     onRender={memoizedUseSemanticSearch}
                     onClose={() => setResultsOpen(false)}
+                    page={page}
+                    pages={pages}
+                    setPage={(delta) => 
+                        setPage(prev => {
+                            const next = (prev ?? 0) + delta;
+                            if (next < 0) return 0;
+                            if (next >= (pages ?? 0)) return (pages ?? 0) - 1;
+                            return next;
+                        })
+                    }
                 >
                     <div className="relative">
-                        <SearchResultsContent 
-                            results={results}
-                            visible={resultsOpen && results.length > 0 && query.length > 0 && !loading}
-                        />
+                        <div className="flex">
+                            <FragmentedFilters 
+                                fragments={fragmentedFilters}
+                                onFilter={(year,entidad,tipo) => {
+                                    setFilters(prev => ({
+                                        ...prev,
+                                        entity: entidad,
+                                        document_type: tipo,
+                                        years: {
+                                            ...prev.years,
+                                            year_to: year,
+                                            year_from: year
+                                        }
+                                    }))
+                                }}
+                                visible={(fragmentedFilters?.tipo?.buckets?.length ?? 0) > 0 && resultsOpen && query.length > 0}
+                                loading={loadingFragments}
+                            />
+                            <SearchResultsContent 
+                                results={results}
+                                visible={resultsOpen && results.length > 0 && query.length > 0 && !loading}
+                            />
+                        </div>
                         
+                        {isTyping && (
+                            <div className="absolute top-full mt-2 flex items-center gap-1 text-sm text-stone-500 h-md">
+                                <p>
+                                    Escribiendo ...
+                                </p>
+                            </div>
+                        )}
+
                         <Loader visible={loading}/>
 
-                        <NoResults visible={!loading && query.length > 0 && results.length == 0} />
+                        <NoResults visible={!isTyping && !loading && query.length > 0 && results.length == 0} />
                     </div>
                 </ResultsModal>
 
@@ -79,51 +125,159 @@ export default function Home() {
                     onSave={() => {
                         setFiltersOpen(false)
                     }}
+                    onClose={() => {
+                        setFiltersOpen(false)
+                    }}
                     onCancel={() => {
                         setFiltersOpen(false);
-                        setFilters({
-                            must: [],
-                            should: [],
-                            yearFrom:"",
-                            yearTo:""
-                        })
+                        setFilters({})
                     }}
                 >
                     <FilterText
-                        value={filters.must}
+                        value={filters.title}
+                        onChange={(frase) => setFilters(prev => ({
+                            ...prev,
+                            title: frase.trim()
+                        }))}
+                        clear={() => setFilters(prev => ({
+                            ...prev,
+                            title: undefined
+                        }))}
+                        label="Debe contener esto en el titulo:"
+                        placeholder="Ej: Resolución del 2008"
+                    />
+                    <FilterText
+                        value={filters.phrase}
+                        onChange={(frase) => setFilters(prev => ({
+                            ...prev,
+                            phrase: frase.trim()
+                        }))}
+                        clear={() => setFilters(prev => ({
+                            ...prev,
+                            phrase: undefined
+                        }))}
+                        label="Debe contener esta frase:"
+                        placeholder="Ingrese la frase"
+                    />
+                    <FilterText
+                        value={filters.not_include?.join(" ") ?? ""}
+                        onChange={(palabras) => setFilters(prev => ({
+                            ...prev,
+                            not_include: palabras.split(" ")
+                        }))}
+                        clear={() => setFilters(prev => ({
+                            ...prev,
+                            not_include: undefined
+                        }))}
+                        label="NO debe contener estas palabras:"
+                        placeholder="Separa las palabras con espacios"
+                    />
+                    <FilterText
+                        value={filters.must?.join(" ") ?? ""}
                         onChange={(palabras) => setFilters(prev => ({
                             ...prev,
                             must: palabras.split(" ")
                         }))}
                         clear={() => setFilters(prev => ({
                             ...prev,
-                            must: []
+                            must: undefined
                         }))}
-                        label="Debe contener estas palabras (separadas por espacios):"
+                        label="Debe contener estas palabras:"
+                        placeholder="Separa las palabras con espacios"
                     />
                     <FilterText
-                        value={filters.should}
+                        value={filters.should?.join(" ") ?? ""}
                         onChange={(palabras) => setFilters(prev => ({
                             ...prev,
                             should: palabras.split(" ")
                         }))}
                         clear={() => setFilters(prev => ({
                             ...prev,
-                            should: []
+                            should: undefined
                         }))}
-                        label="Puede contener estas palabras (separadas por espacios):"
+                        label="Puede contener estas palabras:"
+                        placeholder="Separa las palabras con espacios"
                     />
+                    <FilterText 
+                        value={filters.document_type}
+                        onChange={(tipo_doc) => setFilters(prev => ({
+                            ...prev,
+                            document_type: tipo_doc
+                        }))}
+                        clear={() => setFilters(prev => ({
+                            ...prev,
+                            document_type: undefined
+                        }))}
+                        label="Define el tipo de documento:"
+                        placeholder="Ej: Leyes"
+                    />
+                    <FilterText 
+                        value={filters.entity}
+                        onChange={(entidad) => setFilters(prev => ({
+                            ...prev,
+                            entity: entidad
+                        }))}
+                        clear={() => setFilters(prev => ({
+                            ...prev,
+                            entity: undefined
+                        }))}
+                        label="Escribe la entidad que remite el documento:"
+                        placeholder="Ej: Procuraduría General de la Nación"
+                    />
+                    <div className="flex justify-between items-center gap-3 text-center">
+                        <FilterText 
+                            value={filters.proximity?.query}
+                            onChange={(frase) => setFilters(prev => ({
+                                ...prev,
+                                proximity: {
+                                    ...prev.proximity,
+                                    query: frase
+                                }
+                            }))}
+                            clear={() => setFilters(prev => ({
+                                ...prev,
+                                proximity: {
+                                    ...prev.proximity,
+                                    query: undefined
+                                }
+                            }))}
+                            label="Estas palabras deben estan cerca:"
+                            placeholder="Ej: Ley resolución consejo"
+                        />
+                        <FilterNumber 
+                            value={filters.proximity?.distance}
+                            onChange={(numero) => setFilters(prev => ({
+                                ...prev,
+                                proximity: {
+                                    ...prev.proximity,
+                                    distance: numero
+                                }
+                            }))}
+                            label="Distancia entre las palabras cercanas:"
+                            placeholder="Por defecto 8"
+                        />
+                    </div>
                     <FilterYears
-                        yearFrom={filters.yearFrom}
-                        yearTo={filters.yearTo}
-                        onChangeyearFrom={(year) => setFilters(prev => ({
-                            ...prev,
-                            yearFrom: year
-                        }))}
-                        onChangeyearTo={(year) => setFilters(prev => ({
-                            ...prev,
-                            yearTo: year
-                        }))}
+                        yearFrom={filters.years?.year_from}
+                        yearTo={filters.years?.year_to}
+                        onChangeyearFrom={(year) =>
+                            setFilters(prev => ({
+                                ...prev,
+                                years: {
+                                    ...prev.years,
+                                    year_from: year
+                                }
+                            }))
+                        }
+                        onChangeyearTo={(year) =>
+                            setFilters(prev => ({
+                                ...prev,
+                                years: {
+                                    ...prev.years,
+                                    year_to: year
+                                }
+                            }))
+                        }
                     />
                 </FiltersModal>
             </div>

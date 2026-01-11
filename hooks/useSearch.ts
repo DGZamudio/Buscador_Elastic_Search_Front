@@ -1,30 +1,47 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { regularSearch, semanticSearch } from "@/services/search.service";
-import { SearchFilters, SearchHit } from "@/types/search";
+import { fragmentFilters, regularSearch, semanticSearch } from "@/services/search.service";
+import { FragmentedFilters, SearchFilters, SearchHit } from "@/types/search";
 
 export function useSearch() {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchHit[]>([]);
-  const [filters, setFilters] = useState<SearchFilters>({
-    must     : [],
-    should   : [],
-    yearFrom : "",
-    yearTo   : ""
-  });
-  const [loading, setLoading] = useState(false);
+    const [query, setQuery] = useState<string>("");
+    const [results, setResults] = useState<SearchHit[]>([]);
+    const [isTyping, setIsTyping] = useState<boolean>(false);
+    const [page, setPage] = useState<number>(0);
+    const [pages, setPages] = useState<number>(0);
+    const [filters, setFilters] = useState<SearchFilters>({});
+    const [fragmentedFilters, setFragmentedFilters] = useState<FragmentedFilters | null>();
+    const [loading, setLoading] = useState<boolean>(false)
+    const [loadingFragments, setLoadingFragments] = useState<boolean>(false);
 
-  const hasActiveFilters =
-    filters.must.length > 0 ||
-    filters.should.length > 0 ||
-    filters.yearFrom !== "" ||
-    filters.yearTo !== ""
+    const normalizedFilters = useMemo(
+        () => normalizeFilters(filters),
+        [filters]
+    )
 
-    const memoizedFilters = useMemo(() => filters, [
-        filters.must,
-        filters.should,
-        filters.yearFrom,
-        filters.yearTo
-    ])
+    const hasActiveFilters = useMemo(
+        () => Object.keys(normalizedFilters).length > 0,
+        [normalizedFilters]
+    )
+
+    function normalizeFilters(filters: SearchFilters): SearchFilters {
+        const normalized = { ...filters }
+
+        if (
+            !filters.proximity?.query &&
+            !filters.proximity?.distance
+        ) {
+            delete normalized.proximity
+        }
+
+        if (
+            !filters.years?.year_from &&
+            !filters.years?.year_to
+        ) {
+            delete normalized.years
+        }
+
+        return normalized
+    }
 
     const memoizedUseSemanticSearch = useCallback(() => {
         if (!query) {
@@ -33,41 +50,83 @@ export function useSearch() {
         }
 
         setLoading(true)
-        semanticSearch(query, memoizedFilters, hasActiveFilters)
-        .then((data) => setResults(data))
+        semanticSearch(query, normalizedFilters, hasActiveFilters, page)
+        .then((data) => {
+            setResults(data?.hits ?? [])
+            setPages(data?.max_pages)
+        })
         .catch(console.error)
         .finally(() => setLoading(false))
-    }, [query, memoizedFilters, hasActiveFilters])
+    }, [query, page, normalizedFilters, hasActiveFilters])
 
-  useEffect(() => {
-    const delay = setTimeout(async () => {
-      if (!query) {
-        setResults([]);
-        return;
-      }
+    const memoizedUseGetFragmentedFilters = useCallback(() => {
+        if (!query) {
+            setFragmentedFilters(undefined);
+            return;
+        }
 
-      setLoading(true);
-      try {
-        const data = await regularSearch(query, memoizedFilters, hasActiveFilters);
-        setResults(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }, 300); // debounce
+        setLoadingFragments(true)
+        fragmentFilters(query, normalizedFilters, hasActiveFilters)
+        .then((data) => setFragmentedFilters(data))
+        .catch(console.error)
+        .finally(() => setLoadingFragments(false))
+    }, [query, normalizedFilters, hasActiveFilters])
 
-    return () => clearTimeout(delay);
-  }, [query, hasActiveFilters, memoizedFilters]);
+    useEffect(() => {
+        setPage(0);
+    }, [query, normalizedFilters]);
 
-  return {
-    query,
-    setQuery,
-    filters,
-    setFilters,
-    results,
-    loading,
-    hasActiveFilters,
-    memoizedUseSemanticSearch
-  };
+    useEffect(() => {
+        if (!query) {
+            setResults([]);
+            setIsTyping(false); // Si no hay texto, ya no está escribiendo
+            return;
+        }
+
+        setIsTyping(true); // El usuario está escribiendo
+
+        const delay = setTimeout(async () => {
+            setLoading(true);
+            try {
+                const data = await regularSearch(query, normalizedFilters, hasActiveFilters);
+                setResults(data?.hits ?? []);
+                setPages(data.max_pages);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+                setIsTyping(false); // Ya terminó de escribir (timeout terminó)
+            }
+        }, 300); // debounce
+
+        return () => clearTimeout(delay);
+    }, [query, normalizedFilters, hasActiveFilters]);
+
+    useEffect(() => {
+        if (!query) {
+            setFragmentedFilters(null)
+            return
+        }
+
+        memoizedUseGetFragmentedFilters()
+
+    }, [query])
+
+    return {
+        query,
+        setQuery,
+        filters,
+        setFilters,
+        results,
+        loading,
+        hasActiveFilters,
+        memoizedUseSemanticSearch,
+        fragmentedFilters,
+        memoizedUseGetFragmentedFilters,
+        loadingFragments,
+        pages,
+        page,
+        setPage,
+        isTyping
+    };
 }

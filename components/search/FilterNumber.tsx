@@ -1,13 +1,11 @@
-import { FilterTextProps } from "@/types/search"
-import { X } from "lucide-react"
+import { FilterNumberProps } from "@/types/search"
 
-function FilterText({
+function FilterNumber({
     value,
     onChange,
-    clear,
     label,
     placeholder
-}:FilterTextProps) {
+}:FilterNumberProps) {
 
     return (
         <div className="flex w-full flex-col gap-2 justify-evenly items-center">
@@ -27,22 +25,17 @@ function FilterText({
                     ">
                 <input 
                     value={value ?? ""}
-                    onChange={(e) => onChange(e.target.value)}
+                    onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                     placeholder={placeholder}
                     className="
                         focus:outline-none focus:ring-0
                         p-2 w-7/8
                     "
-                    type="text"
+                    type="number"
                 />
-                {(value ?? "") !== "" && (
-                    <button onClick={clear}>
-                        <X className="cursor-pointer" />
-                    </button>
-                )}
             </div>
         </div>
     )
 }
 
-export default FilterText
+export default FilterNumber

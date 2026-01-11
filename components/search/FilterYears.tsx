@@ -12,8 +12,8 @@ function FilterYears({
                 Rango de años:
             </label>
             <input 
-                value={yearFrom}
-                onChange={(e) => onChangeyearFrom(e.target.value)}
+                value={yearFrom ?? ""}
+                onChange={(e) => onChangeyearFrom(e.target.value === "" ? undefined : e.target.value)}
                 placeholder="Año inicial"
                 className="
                     border border-white/10
@@ -28,8 +28,8 @@ function FilterYears({
             />
             -
             <input 
-                value={yearTo}
-                onChange={(e) => onChangeyearTo(e.target.value)}
+                value={yearTo ?? ""}
+                onChange={(e) => onChangeyearTo(e.target.value === "" ? undefined : e.target.value)}
                 placeholder="Año final"
                 className="
                     border border-white/10
