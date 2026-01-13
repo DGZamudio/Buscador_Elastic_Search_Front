@@ -5,7 +5,6 @@ import { FragmentedFilters, SearchFilters, SearchHit } from "@/types/search";
 export function useSearch() {
     const [query, setQuery] = useState<string>("");
     const [results, setResults] = useState<SearchHit[]>([]);
-    const [isTyping, setIsTyping] = useState<boolean>(false);
     const [page, setPage] = useState<number>(0);
     const [pages, setPages] = useState<number>(0);
     const [filters, setFilters] = useState<SearchFilters>({});
@@ -79,11 +78,8 @@ export function useSearch() {
     useEffect(() => {
         if (!query) {
             setResults([]);
-            setIsTyping(false); // Si no hay texto, ya no está escribiendo
             return;
         }
-
-        setIsTyping(true); // El usuario está escribiendo
 
         const delay = setTimeout(async () => {
             setLoading(true);
@@ -95,7 +91,6 @@ export function useSearch() {
                 console.error(error);
             } finally {
                 setLoading(false);
-                setIsTyping(false); // Ya terminó de escribir (timeout terminó)
             }
         }, 300); // debounce
 
@@ -126,7 +121,6 @@ export function useSearch() {
         loadingFragments,
         pages,
         page,
-        setPage,
-        isTyping
+        setPage
     };
 }

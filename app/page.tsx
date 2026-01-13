@@ -28,7 +28,6 @@ export default function Home() {
     loadingFragments,
     page,
     pages,
-    isTyping,
     setPage
   } = useSearch();
 
@@ -105,18 +104,10 @@ export default function Home() {
                                 visible={resultsOpen && results.length > 0 && query.length > 0 && !loading}
                             />
                         </div>
-                        
-                        {isTyping && (
-                            <div className="absolute top-full mt-2 flex items-center gap-1 text-sm text-stone-500 h-md">
-                                <p>
-                                    Escribiendo ...
-                                </p>
-                            </div>
-                        )}
 
                         <Loader visible={loading}/>
 
-                        <NoResults visible={!isTyping && !loading && query.length > 0 && results.length == 0} />
+                        <NoResults visible={!loading && query.length > 0 && results.length == 0} />
                     </div>
                 </ResultsModal>
 
