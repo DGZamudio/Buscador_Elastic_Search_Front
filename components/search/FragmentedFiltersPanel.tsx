@@ -23,7 +23,7 @@ export default function FragmentedFilters({
   if (!visible) return null;
 
   return (
-    <div className="mt-3 max-w-2xl rounded-xl border border-white/10 bg-black/70 backdrop-blur-xl shadow-xl">
+    <div className="mt-3 container sm:max-w-1/3 rounded-xl border border-(--foreground)/10 bg-(--background)/70 backdrop-blur-xl shadow-xl">
         {loading ? (
             <Loader visible/>
         ) : (
@@ -32,14 +32,14 @@ export default function FragmentedFilters({
                     const tipoOpen = openTipos.has(tipo.key);
 
                     return (
-                    <div key={tipo.key} className="border-b border-white/5 px-4 py-3">
+                    <div key={tipo.key} className="border-b border-(--foreground)/5 px-4 py-3">
                         <button
                             onClick={() => toggle(setOpenTipos, tipo.key)}
-                            className="flex w-full items-center gap-2 text-left hover:text-white"
+                            className="flex w-full items-center gap-2 text-left hover:text-(--foreground)"
                         >
                             {tipoOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                             <span className="font-semibold">{tipo.key}</span>
-                            <span className="ml-auto text-xs text-white/50">
+                            <span className="ml-auto text-xs text-(--foreground)/50">
                                 {tipo.doc_count}
                             </span>
                         </button>
@@ -54,7 +54,7 @@ export default function FragmentedFilters({
                                         <div key={entidadKey}>
                                             <button
                                                 onClick={() => toggle(setOpenEntidades, entidadKey)}
-                                                className="flex w-full items-center gap-2 text-sm hover:text-white"
+                                                className="flex w-full items-center gap-2 text-sm hover:text-(--foreground)"
                                             >
                                                 {entidadOpen ? (
                                                     <ChevronDown size={14} />
@@ -62,7 +62,7 @@ export default function FragmentedFilters({
                                                     <ChevronRight size={14} />
                                                 )}
                                                 <span>{entidad.key}</span>
-                                                <span className="ml-auto text-xs text-white/40">
+                                                <span className="ml-auto text-xs text-(--foreground)/40">
                                                     {entidad.doc_count}
                                                 </span>
                                             </button>
@@ -72,7 +72,7 @@ export default function FragmentedFilters({
                                                     {entidad.year.buckets.map(year => (
                                                         <button
                                                             key={year.key}
-                                                            className="block w-full text-left text-xs text-white/70 hover:text-white"
+                                                            className="block w-full text-left text-xs text-(--foreground)/70 hover:text-(--foreground)"
                                                             onClick={() => onFilter(year.key_as_string, entidad.key, tipo.key)}
                                                         >
                                                             {year.key_as_string} ({year.doc_count})

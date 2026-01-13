@@ -9,10 +9,10 @@ export default function SearchResultsPanel({
     <div
         className={`
             mt-3 w-full
-            bg-black/70 backdrop-blur-xl
-            border border-white/10
+            bg-(--background)/70 backdrop-blur-xl
+            border border-(--foreground)/10
             rounded-xl
-            shadow-xl shadow-black/50
+            shadow-xl shadow-(--background)/50
             overflow-hidden
             transition-all duration-200 ease-out
             ${visible
@@ -20,13 +20,13 @@ export default function SearchResultsPanel({
             : "opacity-0 translate-y-2 pointer-events-none"}
         `}
     >
-        {results.slice(0, 5).map((hit, index) => (
+        {results.slice(0,5).map((hit, index) => (
             <Link
                 key={index}
                 className="
                     block
                     px-4 py-3 cursor-pointer
-                    hover:bg-white/15 transition
+                    hover:bg-(--foreground)/15 transition
                 "
                 href={`https://www.medellin.gov.co/normograma/docs/astrea/docs/${hit._source.Numero}.htm`}
             >

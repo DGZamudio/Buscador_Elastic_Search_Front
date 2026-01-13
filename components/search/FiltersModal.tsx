@@ -27,25 +27,25 @@ export default function FiltersModal({
   return (
     <div className="fixed inset-0 z-50">
         <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-(--background)/60 backdrop-blur-sm"
             onClick={onClose}
         />
 
         <div className="relative mx-auto mt-32 w-full max-w-lg">
             <div className="
                 rounded-2xl
-                bg-[#0f0f0f]
-                border border-white/10
-                shadow-2xl
+                bg-background
+                border border-(--foreground)/10
+                shadow-2xl max-h-[80vh] overflow-y-auto
             ">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-(--foreground)/10">
                     <h2 className="text-lg font-semibold">
                         Filtros avanzados
                     </h2>
 
                     <button
                         onClick={onClose}
-                        className="text-stone-400 hover:text-white transition cursor-pointer"
+                        className="text-stone-400 hover:text-(--foreground) transition cursor-pointer"
                     >
                         <X size="1.2em" />
                     </button>
@@ -55,10 +55,10 @@ export default function FiltersModal({
                     {children}
                 </div>
 
-                <div className="flex justify-end gap-3 px-6 py-4 border-t border-white/10">
+                <div className="flex justify-end gap-3 px-6 py-4 border-t border-(--foreground)/10">
                     <button
                         onClick={onCancel}
-                        className="text-sm text-stone-400 hover:text-white cursor-pointer"
+                        className="text-sm text-stone-400 hover:text-(--foreground) cursor-pointer"
                     >
                         Cancelar
                     </button>
@@ -66,9 +66,9 @@ export default function FiltersModal({
                     <button
                         onClick={onSave}
                         className="
-                            rounded-lg bg-[#7a1f1f]
+                            rounded-lg bg-(--color-primary)
                             px-4 py-2 text-sm font-medium
-                            hover:bg-[#8c2a2a]
+                            hover:bg-(--color-secondary)
                             cursor-pointer
                         "
                     >

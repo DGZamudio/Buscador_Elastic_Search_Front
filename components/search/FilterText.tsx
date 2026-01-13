@@ -15,13 +15,13 @@ function FilterText({
                 {label}
             </label>
             <div className="
-                        border border-white/10
+                        border border-(--foreground)/10
                         rounded 
                         flex justify-evenly
                         w-full
                         focus-within:outline-none
-                        focus-within:ring-1 focus-within:ring-[#7a1f1f]
-                        focus-within:border-[#7a1f1f]
+                        focus-within:ring-1 focus-within:ring-(--color-primary)
+                        focus-within:border-(--color-primary)
                         transition
                         duration-200
                     ">

@@ -16,11 +16,11 @@ function FilterYears({
                 onChange={(e) => onChangeyearFrom(e.target.value === "" ? undefined : e.target.value)}
                 placeholder="Año inicial"
                 className="
-                    border border-white/10
+                    border border-(--foreground)/10
                     rounded p-2 w-1/3
                     focus:outline-none
-                    focus:ring-1 focus:ring-[#7a1f1f]
-                    focus:border-[#7a1f1f]
+                    focus:ring-1 focus:ring-(--color-primary)
+                    focus:border-(--color-primary)
                     transition
                     duration-200
                 "
@@ -32,11 +32,11 @@ function FilterYears({
                 onChange={(e) => onChangeyearTo(e.target.value === "" ? undefined : e.target.value)}
                 placeholder="Año final"
                 className="
-                    border border-white/10
+                    border border-(--foreground)/10
                     rounded p-2 w-1/3
                     focus:outline-none
-                    focus:ring-1 focus:ring-[#7a1f1f]
-                    focus:border-[#7a1f1f]
+                    focus:ring-1 focus:ring-(--color-primary)
+                    focus:border-(--color-primary)
                     transition
                     duration-200
                 "

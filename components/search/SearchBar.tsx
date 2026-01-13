@@ -31,8 +31,8 @@ function SearchBar({
             className="
                 flex items-stretch
                 rounded-xl
-                border border-white/10
-                bg-black/40 backdrop-blur
+                border border-(--foreground)/10
+                bg-(--background)/40 backdrop-blur
                 overflow-hidden
                 transition
             "
@@ -54,11 +54,11 @@ function SearchBar({
                     className="
                         flex items-center justify-center
                         px-5
-                        hover:bg-[#7a1f1f] hover:text-white!
+                        hover:bg-(--color-primary) hover:text-(--foreground)!
                         transition
-                        border-l border-white/10
+                        border-l border-(--foreground)/10
                         cursor-pointer
-                        text-[#7a1f1f]
+                        text-(--color-primary)
                     "
                     type="button"
                     onClick={onCleanFilters}
@@ -70,11 +70,11 @@ function SearchBar({
                 className={`
                     flex items-center justify-center
                     px-5
-                    hover:bg-[#7a1f1f] hover:text-white!
+                    hover:bg-(--color-primary) hover:text-(--foreground)!
                     transition
-                    border-l border-white/10
+                    border-l border-(--foreground)/10
                     cursor-pointer
-                    ${filterActive ? "text-[#7a1f1f]" : "text-white"}
+                    ${filterActive ? "text-(--color-primary)" : "text-(--foreground)"}
                 `}
                 type="button"
                 onClick={onOpenFilters}
@@ -89,16 +89,16 @@ function SearchBar({
                 className="
                     flex items-center justify-center
                     px-5
-                    hover:bg-[#7a1f1f]
+                    hover:bg-(--color-primary)
                     transition
-                    border-l border-white/10
+                    border-l border-(--foreground)/10
                     cursor-pointer
                 "
                 onClick={() => handleSubmit()}
             >
                 <Search
                     size="1.2em"
-                    className="text-white"
+                    className="text-(--foreground)"
                 />
             </button>
         </div>

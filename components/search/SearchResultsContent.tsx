@@ -11,10 +11,10 @@ export default function SearchResultsContent({
             <div
                 className={`
                     mt-3 w-full
-                    bg-black/70 backdrop-blur-xl
-                    border border-white/10
+                    bg-(--background)/70 backdrop-blur-xl
+                    border border-(--foreground)/10
                     rounded-xl
-                    shadow-xl shadow-black/50
+                    shadow-xl shadow-(--background)/50
                     overflow-hidden
                     transition-all duration-200 ease-out
                     ${visible
@@ -28,14 +28,14 @@ export default function SearchResultsContent({
                         className="
                             block
                             px-4 py-3 cursor-pointer
-                            hover:bg-white/25 transition
+                            hover:bg-(--foreground)/25 transition
                         "
                         href={`https://www.medellin.gov.co/normograma/docs/astrea/docs/${hit._source.Numero}.htm`}
                     >
                         <p className="font-medium">
                             {hit._source.title}
                         </p>
-                        <p className="text-white/50">
+                        <p className="text-(--foreground)/50">
                             {hit._source.Epigrafe}
                         </p>
                         <p className="text-sm">

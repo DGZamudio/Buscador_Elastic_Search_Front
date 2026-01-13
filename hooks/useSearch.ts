@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fragmentFilters, regularSearch, semanticSearch } from "@/services/search.service";
-import { FragmentedFilters, SearchFilters, SearchHit } from "@/types/search";
+import { FragmentedFilters, SearchFilters, SearchHit, searchType } from "@/types/search";
 
 export function useSearch() {
     const [query, setQuery] = useState<string>("");
     const [results, setResults] = useState<SearchHit[]>([]);
+    const [searchType, setSearchType] = useState<searchType>("regular");
     const [page, setPage] = useState<number>(0);
     const [pages, setPages] = useState<number>(0);
     const [filters, setFilters] = useState<SearchFilters>({});
@@ -42,11 +43,13 @@ export function useSearch() {
         return normalized
     }
 
-    const memoizedUseSemanticSearch = useCallback(() => {
+    useEffect(() => {
         if (!query) {
             setResults([]);
             return;
         }
+
+        if (searchType !== "semantic") return
 
         setLoading(true)
         semanticSearch(query, normalizedFilters, hasActiveFilters, page)
@@ -56,7 +59,7 @@ export function useSearch() {
         })
         .catch(console.error)
         .finally(() => setLoading(false))
-    }, [query, page, normalizedFilters, hasActiveFilters])
+    }, [query, page, normalizedFilters, hasActiveFilters, searchType])
 
     const memoizedUseGetFragmentedFilters = useCallback(() => {
         if (!query) {
@@ -81,12 +84,15 @@ export function useSearch() {
             return;
         }
 
+        if (searchType !== "regular") return
+
         const delay = setTimeout(async () => {
             setLoading(true);
             try {
-                const data = await regularSearch(query, normalizedFilters, hasActiveFilters);
+                const data = await regularSearch(query, normalizedFilters, hasActiveFilters, page);
                 setResults(data?.hits ?? []);
                 setPages(data.max_pages);
+                setSearchType("regular")
             } catch (error) {
                 console.error(error);
             } finally {
@@ -95,7 +101,7 @@ export function useSearch() {
         }, 300); // debounce
 
         return () => clearTimeout(delay);
-    }, [query, normalizedFilters, hasActiveFilters]);
+    }, [query, page, normalizedFilters, hasActiveFilters]);
 
     useEffect(() => {
         if (!query) {
@@ -115,12 +121,13 @@ export function useSearch() {
         results,
         loading,
         hasActiveFilters,
-        memoizedUseSemanticSearch,
         fragmentedFilters,
         memoizedUseGetFragmentedFilters,
         loadingFragments,
         pages,
         page,
-        setPage
+        setPage,
+        searchType,
+        setSearchType
     };
 }

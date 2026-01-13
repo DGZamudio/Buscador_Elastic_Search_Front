@@ -3,7 +3,9 @@ import { FragmentedFilters, SearchFilters, SearchResultsResponse } from "@/types
 export async function regularSearch(
   query: string,
   filters: SearchFilters,
-  hasActiveFilters: boolean
+  hasActiveFilters: boolean,
+  page: number = 0,
+  limit: number = 10
 ): Promise<SearchResultsResponse> {
   if (!query) return {hits:[], max_pages:0};
 
@@ -18,7 +20,9 @@ export async function regularSearch(
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        filters: hasActiveFilters ? filters : null
+        filters: hasActiveFilters ? filters : null,
+        skip: page ?? undefined,
+        limit: limit ?? undefined
       })
     }
   );

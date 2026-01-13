@@ -1,4 +1,5 @@
 "use client"
+import Image from 'next/image'
 import FilterText from "@/components/search/FilterText";
 import FiltersModal from "@/components/search/FiltersModal";
 import FilterYears from "@/components/search/FilterYears";
@@ -23,24 +24,29 @@ export default function Home() {
     results,
     loading,
     hasActiveFilters,
-    memoizedUseSemanticSearch,
     fragmentedFilters,
     loadingFragments,
     page,
     pages,
-    setPage
+    setPage,
+    setSearchType
   } = useSearch();
 
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false)
   const [resultsOpen, setResultsOpen] = useState<boolean>(false)
 
   return (
-    <div className="flex min-h-screen items-center justify-center font-sans bg-gradient-to-t from-[#7a1f1f] to-[#0f0f0f] to-50%">
+    <div className="flex min-h-screen items-center justify-center font-sans bg-gradient-to-t from-(--color-primary) to-background to-50%">
         <main className="flex flex-col gap-8 items-center w-full">
             <div className="flex gap-10 items-center justify-between text-5xl font-semibold">
-                <BookSearch className="w-[1.5em] h-[1.5em]"/>
+                <Image 
+                    src={'/documentospdf/diego_pruebas/compilacion/logo_astrea_blanco.svg'}
+                    alt='Astrea'
+                    width={45}
+                    height={45}
+                />
                 <h1>
-                    <span className="text-[#7a1f1f]">Atlas</span> Search
+                    Buscar en <span className="text-(--color-primary)">Astrea</span>
                 </h1>
             </div>
 
@@ -67,8 +73,11 @@ export default function Home() {
 
                 <ResultsModal
                     open={resultsOpen}
-                    onRender={memoizedUseSemanticSearch}
-                    onClose={() => setResultsOpen(false)}
+                    onRender={() => setSearchType("semantic")}
+                    onClose={() => {
+                        setSearchType("regular")
+                        setResultsOpen(false)
+                    }}
                     page={page}
                     pages={pages}
                     setPage={(delta) => 
@@ -81,10 +90,12 @@ export default function Home() {
                     }
                 >
                     <div className="relative">
-                        <div className="flex">
+                        <div className="block gap-2 sm:flex">
                             <FragmentedFilters 
                                 fragments={fragmentedFilters}
                                 onFilter={(year,entidad,tipo) => {
+                                    console.log("setteo como regular pe")
+                                    setSearchType("regular")
                                     setFilters(prev => ({
                                         ...prev,
                                         entity: entidad,
@@ -105,7 +116,9 @@ export default function Home() {
                             />
                         </div>
 
-                        <Loader visible={loading}/>
+                        <div className="my-15">
+                            <Loader visible={loading}/>
+                        </div>
 
                         <NoResults visible={!loading && query.length > 0 && results.length == 0} />
                     </div>

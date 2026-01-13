@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: "export",
+  basePath: '/documentospdf/diego_pruebas/compilacion',
+  assetPrefix: '/documentospdf/diego_pruebas/compilacion/'
 };
 
 export default nextConfig;

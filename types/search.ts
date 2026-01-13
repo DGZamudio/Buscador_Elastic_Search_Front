@@ -15,6 +15,8 @@ export interface SearchHit {
 
 }
 
+export type searchType = "semantic" | "regular";
+
 export interface SearchBarProps {
     value          : string;
     onChange       : (value: string) => void;
@@ -132,10 +134,10 @@ export interface ResultsModalProps {
   open     : boolean;
   onClose  : () => void;
   onRender : () => void;
-  children : React.ReactNode;
-  page     : number;
-  pages    : number;
-  setPage  : (numero: number) => void;
+  children   : React.ReactNode;
+  page       : number;
+  pages      : number;
+  setPage    : (numero: number) => void;
 }
 
 export interface LoaderProps {
