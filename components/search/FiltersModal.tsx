@@ -1,5 +1,5 @@
 "use client"
-
+import "@/styles/Componentes_Modales.css"
 import { useEffect } from "react"
 import { X } from "lucide-react"
 import { ModalProps } from "@/types/search"
@@ -25,52 +25,42 @@ export default function FiltersModal({
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="filtros-modal-overlay">
         <div
-            className="absolute inset-0 bg-(--background)/60 backdrop-blur-sm"
+            className="filtros-modal-fondo"
             onClick={onClose}
         />
 
-        <div className="relative mx-auto mt-32 w-full max-w-lg">
-            <div className="
-                rounded-2xl
-                bg-background
-                border border-(--foreground)/10
-                shadow-2xl max-h-[80vh] overflow-y-auto
-            ">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-(--foreground)/10">
-                    <h2 className="text-lg font-semibold">
+        <div className="filtros-modal-contenedor">
+            <div className="filtros-modal-caja">
+                <div className="filtros-modal-encabezado">
+                    <h2 className="filtros-modal-titulo">
                         Filtros avanzados
                     </h2>
 
                     <button
                         onClick={onClose}
-                        className="text-stone-400 hover:text-(--foreground) transition cursor-pointer"
+                        className="filtros-modal-boton-cerrar"
                     >
                         <X size="1.2em" />
                     </button>
                 </div>
 
-                <div className="flex flex-col gap-3 px-6 py-5">
+                <div className="filtros-modal-contenido">
                     {children}
                 </div>
 
-                <div className="flex justify-end gap-3 px-6 py-4 border-t border-(--foreground)/10">
+                <div className="filtros-modal-pie">
                     <button
                         onClick={onCancel}
-                        className="text-sm text-stone-400 hover:text-(--foreground) cursor-pointer"
+                        className="filtros-modal-boton-cancelar"
                     >
                         Cancelar
                     </button>
 
                     <button
                         onClick={onSave}
-                        className="
-                            rounded-lg bg-(--color-primary)
-                            px-4 py-2 text-sm font-medium
-                            hover:bg-(--color-secondary)
-                            cursor-pointer
-                        "
+                        className="filtros-modal-boton-aplicar"
                     >
                         Aplicar
                     </button>

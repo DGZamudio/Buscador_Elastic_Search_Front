@@ -1,3 +1,4 @@
+import "@/styles/Componentes_Filtros.css"
 import { FilterYearsProps } from "@/types/search"
 
 function FilterYears({
@@ -7,39 +8,25 @@ function FilterYears({
     onChangeyearTo
 }:FilterYearsProps) {
     return (
-        <div className="flex justify-between items-center mt-3">
-            <label>
+        <div className="rango-anios-filtro">
+            <label className="etiqueta-campo-filtro">
                 Rango de años:
             </label>
             <input 
                 value={yearFrom ?? ""}
                 onChange={(e) => onChangeyearFrom(e.target.value === "" ? undefined : e.target.value)}
                 placeholder="Año inicial"
-                className="
-                    border border-(--foreground)/10
-                    rounded p-2 w-1/3
-                    focus:outline-none
-                    focus:ring-1 focus:ring-(--color-primary)
-                    focus:border-(--color-primary)
-                    transition
-                    duration-200
-                "
+                className="campo-input-filtro campo-input-rango"
                 type="number"
             />
-            -
+
+            <span className="separador-rango-anios">-</span>
+
             <input 
                 value={yearTo ?? ""}
                 onChange={(e) => onChangeyearTo(e.target.value === "" ? undefined : e.target.value)}
                 placeholder="Año final"
-                className="
-                    border border-(--foreground)/10
-                    rounded p-2 w-1/3
-                    focus:outline-none
-                    focus:ring-1 focus:ring-(--color-primary)
-                    focus:border-(--color-primary)
-                    transition
-                    duration-200
-                "
+                className="campo-input-filtro campo-input-rango"
                 type="number"
             />
         </div>

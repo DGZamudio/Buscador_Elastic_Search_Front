@@ -10,7 +10,7 @@ function SearchBar({
     onOpenFilters,
     onCleanFilters,
     filterActive,
-    placeholder = "Buscar en Atlas..."
+    placeholder = "Buscar en Astrea..."
 }: SearchBarProps) {
     const handleSubmit = () => {
         if (!value || value == "") return
@@ -23,43 +23,20 @@ function SearchBar({
             e.preventDefault();
             handleSubmit()
         }}
-        className="
-            relative w-full max-w-5xl
-        "
+        className="buscador-formulario"
     >
         <div
-            className="
-                flex items-stretch
-                rounded-xl
-                border border-(--foreground)/10
-                bg-(--background)/40 backdrop-blur
-                overflow-hidden
-                transition
-            "
+            className="buscador-contenedor"
         >
             <input
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="
-                    flex-1
-                    bg-transparent
-                    px-5 py-4
-                    outline-none
-                    text-lg
-                "
+                className="buscador-input"
             />
             {filterActive && (
                 <button
-                    className="
-                        flex items-center justify-center
-                        px-5
-                        hover:bg-(--color-primary) hover:text-(--foreground)!
-                        transition
-                        border-l border-(--foreground)/10
-                        cursor-pointer
-                        text-(--color-primary)
-                    "
+                    className="buscador-boton buscador-boton-limpiar"
                     type="button"
                     onClick={onCleanFilters}
                 >
@@ -67,15 +44,9 @@ function SearchBar({
                 </button>
             )}
             <button
-                className={`
-                    flex items-center justify-center
-                    px-5
-                    hover:bg-(--color-primary) hover:text-(--foreground)!
-                    transition
-                    border-l border-(--foreground)/10
-                    cursor-pointer
-                    ${filterActive ? "text-(--color-primary)" : "text-(--foreground)"}
-                `}
+                className={`buscador-boton buscador-boton-filtros ${
+                filterActive ? "buscador-boton-activo" : ""
+            }`}
                 type="button"
                 onClick={onOpenFilters}
             >
@@ -86,19 +57,12 @@ function SearchBar({
                 )}
             </button>
             <button
-                className="
-                    flex items-center justify-center
-                    px-5
-                    hover:bg-(--color-primary)
-                    transition
-                    border-l border-(--foreground)/10
-                    cursor-pointer
-                "
-                onClick={() => handleSubmit()}
+                className="buscador-boton buscador-boton-buscar"
+                onClick={handleSubmit}
             >
                 <Search
-                    size="1.2em"
-                    className="text-(--foreground)"
+                    className="buscador-icono-buscar"
+                    size="1.2rem"
                 />
             </button>
         </div>

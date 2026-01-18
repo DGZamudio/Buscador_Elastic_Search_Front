@@ -1,14 +1,15 @@
 import "@/styles/Componentes_Filtros.css"
-import { FilterTextProps } from "@/types/search"
+import { FilterSelectProps } from "@/types/search"
 import { X } from "lucide-react"
 
 function FilterText({
     value,
+    options,
     onChange,
     clear,
     label,
     placeholder
-}:FilterTextProps) {
+}:FilterSelectProps) {
 
     return (
         <div className="grupo-campo-filtro">
@@ -16,6 +17,11 @@ function FilterText({
                 {label}
             </label>
             <div className="contenedor-input-casilla-numero-filtro">
+                <select className="campo-select-filtro">
+                    {options.map((opcion) => (
+                        <option key={opcion.key} value={opcion.key}>{opcion.key}</option>
+                    ))}
+                </select>
                 <input 
                     value={value ?? ""}
                     onChange={(e) => onChange(e.target.value)}
@@ -24,8 +30,8 @@ function FilterText({
                     type="text"
                 />
                 {(value ?? "") !== "" && (
-                    <button className="boton-limpiar-filtro" onClick={clear}>
-                        <X className="cursor-pointer" />
+                    <button onClick={clear}>
+                        <X className="boton-limpiar-filtro" />
                     </button>
                 )}
             </div>

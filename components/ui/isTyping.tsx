@@ -1,8 +1,8 @@
 import styles from "./ui.module.css"
 import { LoaderProps } from "@/types/search";
-import { Search } from "lucide-react";
+import { Pencil } from "lucide-react";
 
-export default function Loader({
+export default function Typing({
     visible
 }:LoaderProps) {
   return (
@@ -10,9 +10,9 @@ export default function Loader({
         {visible && (
             <div className={styles.contenedorModal}>
                 <p>
-                    Buscando
+                    Escribiendo... 
                 </p>
-                <Search size={"1em"}/>
+                <Pencil size={"1em"}/>
             </div>
         )}
     </>

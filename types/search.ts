@@ -15,7 +15,7 @@ export interface SearchHit {
 
 }
 
-export type searchType = "semantic" | "regular";
+export type searchType = "title" | "semantic" | "regular";
 
 export interface SearchBarProps {
     value          : string;
@@ -81,6 +81,20 @@ export interface FilterTextProps {
   placeholder : string;
 }
 
+type SelectOption = {
+    key   : string;
+    value : string;
+}
+
+export interface FilterSelectProps {
+  value       : string;
+  options     : SelectOption[];
+  onChange    : (value: string) => void;
+  clear       : () => void;
+  label       : string;
+  placeholder : string;
+}
+
 // Filtros fragmentados jerarquicamente 
 type AggBucket = {
   key       : string
@@ -119,7 +133,7 @@ export interface FragmentedFilters {
 export interface FragmentedFiltersProps {
     fragments? : FragmentedFilters | null;
     visible    : boolean;
-    onFilter   : (year:string, entidad:string, tipo:string) => void;
+    onFilter   : (selectedFilters: SearchFilters) => void;
     loading    : boolean;
 }
 
@@ -142,4 +156,14 @@ export interface ResultsModalProps {
 
 export interface LoaderProps {
     visible : boolean;
+    bottom? : boolean;
+}
+
+export type initialFilters = {
+    entidades: {
+        buckets: AggBucket[]
+    },
+    tipos: {
+        buckets: AggBucket[]
+    }
 }

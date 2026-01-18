@@ -7,33 +7,27 @@ export default function SearchResultsPanel({
 }: SearchResultsProps) {
   return (
     <div
-        className={`
-            mt-3 w-full
-            bg-(--background)/70 backdrop-blur-xl
-            border border-(--foreground)/10
-            rounded-xl
-            shadow-xl shadow-(--background)/50
-            overflow-hidden
-            transition-all duration-200 ease-out
-            ${visible
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-2 pointer-events-none"}
-        `}
+        className={`panel-sugerencias-busqueda ${
+            visible
+                ? "panel-sugerencias-visible"
+                : "panel-sugerencias-oculto"
+        }`}
     >
         {results.slice(0,5).map((hit, index) => (
             <Link
                 key={index}
-                className="
-                    block
-                    px-4 py-3 cursor-pointer
-                    hover:bg-(--foreground)/15 transition
-                "
+                className="panel-sugerencias-item"
                 href={`https://www.medellin.gov.co/normograma/docs/astrea/docs/${hit._source.Numero}.htm`}
             >
-                <p className="font-medium">
+                <p className="panel-sugerencias-titulo">
                     {hit._source.title}
                 </p>
-                <p className="text-sm">
+                <div className="panel-sugerencias-resumen-contenedor">
+                    <p className="panel-sugerencias-resumen">
+                        {hit._source.Epigrafe}
+                    </p>
+                </div>
+                <p className="panel-sugerencias-meta">
                     {hit._source.Entidad} · {hit._source.Year}
                 </p>
             </Link>

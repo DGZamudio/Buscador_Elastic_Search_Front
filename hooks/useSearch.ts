@@ -5,17 +5,22 @@ import { FragmentedFilters, SearchFilters, SearchHit, searchType } from "@/types
 export function useSearch() {
     const [query, setQuery] = useState<string>("");
     const [results, setResults] = useState<SearchHit[]>([]);
-    const [searchType, setSearchType] = useState<searchType>("regular");
+    const [searchType, setSearchType] = useState<searchType>("title");
     const [page, setPage] = useState<number>(0);
     const [pages, setPages] = useState<number>(0);
     const [filters, setFilters] = useState<SearchFilters>({});
+    const [selectedFacetaFilters, setSelectedFacetaFilters] = useState<SearchFilters>({});
     const [fragmentedFilters, setFragmentedFilters] = useState<FragmentedFilters | null>();
     const [loading, setLoading] = useState<boolean>(false)
     const [loadingFragments, setLoadingFragments] = useState<boolean>(false);
+    const [isTyping, setIsTyping] = useState<boolean>(false);
 
     const normalizedFilters = useMemo(
-        () => normalizeFilters(filters),
-        [filters]
+        () => normalizeFilters({
+            ...filters,
+            ...selectedFacetaFilters
+        }),
+        [filters, selectedFacetaFilters]
     )
 
     const hasActiveFilters = useMemo(
@@ -43,24 +48,6 @@ export function useSearch() {
         return normalized
     }
 
-    useEffect(() => {
-        if (!query) {
-            setResults([]);
-            return;
-        }
-
-        if (searchType !== "semantic") return
-
-        setLoading(true)
-        semanticSearch(query, normalizedFilters, hasActiveFilters, page)
-        .then((data) => {
-            setResults(data?.hits ?? [])
-            setPages(data?.max_pages)
-        })
-        .catch(console.error)
-        .finally(() => setLoading(false))
-    }, [query, page, normalizedFilters, hasActiveFilters, searchType])
-
     const memoizedUseGetFragmentedFilters = useCallback(() => {
         if (!query) {
             setFragmentedFilters(undefined);
@@ -78,21 +65,35 @@ export function useSearch() {
         setPage(0);
     }, [query, normalizedFilters]);
 
+    // Busqueda Regular
     useEffect(() => {
+        setIsTyping(true)
         if (!query) {
             setResults([]);
+            setIsTyping(false)
             return;
         }
 
-        if (searchType !== "regular") return
+        if (searchType === "semantic") return
+
+        let localFilters:SearchFilters
+        let localHasActiveFilters:boolean
+
+        if (searchType === "title") {
+            localFilters = {...normalizedFilters, title:normalizedFilters.title ?? query}
+            localHasActiveFilters = true
+        } else {
+            localFilters = normalizedFilters
+            localHasActiveFilters = hasActiveFilters
+        }
 
         const delay = setTimeout(async () => {
+            setIsTyping(false)
             setLoading(true);
             try {
-                const data = await regularSearch(query, normalizedFilters, hasActiveFilters, page);
+                const data = await regularSearch(query, localFilters, localHasActiveFilters, page);
                 setResults(data?.hits ?? []);
                 setPages(data.max_pages);
-                setSearchType("regular")
             } catch (error) {
                 console.error(error);
             } finally {
@@ -103,31 +104,42 @@ export function useSearch() {
         return () => clearTimeout(delay);
     }, [query, page, normalizedFilters, hasActiveFilters]);
 
+    // Busqueda semantica
     useEffect(() => {
         if (!query) {
-            setFragmentedFilters(null)
-            return
+            setResults([]);
+            return;
         }
 
-        memoizedUseGetFragmentedFilters()
+        if (searchType !== "semantic") return
 
-    }, [query])
+        setLoading(true)
+        memoizedUseGetFragmentedFilters()
+        semanticSearch(query, normalizedFilters, hasActiveFilters, page)
+        .then((data) => {
+            setResults(data?.hits ?? [])
+            setPages(data?.max_pages)
+        })
+        .catch(console.error)
+        .finally(() => setLoading(false))
+    }, [query, page, normalizedFilters, hasActiveFilters, searchType])
 
     return {
         query,
         setQuery,
         filters,
         setFilters,
+        setSelectedFacetaFilters,
         results,
         loading,
         hasActiveFilters,
         fragmentedFilters,
-        memoizedUseGetFragmentedFilters,
         loadingFragments,
         pages,
         page,
         setPage,
         searchType,
-        setSearchType
+        setSearchType,
+        isTyping
     };
 }

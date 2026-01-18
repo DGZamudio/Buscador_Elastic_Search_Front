@@ -1,5 +1,6 @@
 import { SearchResultsProps } from "@/types/search";
 import Link from "next/link";
+import NoResults from "../ui/NoResults";
 
 export default function SearchResultsContent({
   results,
@@ -9,40 +10,38 @@ export default function SearchResultsContent({
     <>
         {visible && (
             <div
-                className={`
-                    mt-3 w-full
-                    bg-(--background)/70 backdrop-blur-xl
-                    border border-(--foreground)/10
-                    rounded-xl
-                    shadow-xl shadow-(--background)/50
-                    overflow-hidden
-                    transition-all duration-200 ease-out
-                    ${visible
-                    ? "opacity-100 translate-y-0 pointer-events-auto"
-                    : "opacity-0 translate-y-2 pointer-events-none"}
-                `}
+                className={`panel-resultados ${
+                    visible
+                        ? "panel-resultados-visible"
+                        : "panel-resultados-oculto"
+                }`}
             >
-                {results.map((hit, index) => (
-                    <Link
-                        key={index}
-                        className="
-                            block
-                            px-4 py-3 cursor-pointer
-                            hover:bg-(--foreground)/25 transition
-                        "
-                        href={`https://www.medellin.gov.co/normograma/docs/astrea/docs/${hit._source.Numero}.htm`}
-                    >
-                        <p className="font-medium">
-                            {hit._source.title}
-                        </p>
-                        <p className="text-(--foreground)/50">
-                            {hit._source.Epigrafe}
-                        </p>
-                        <p className="text-sm">
-                            {hit._source.Entidad} · {hit._source.Year}
-                        </p>
-                    </Link>
-                ))}
+                {results.length > 0 ? (
+                    <div className="panel-resultados-lista">
+                        {results.map((hit, index) => (
+                            <Link
+                                key={index}
+                                className="panel-resultados-item"
+                                href={`https://www.medellin.gov.co/normograma/docs/astrea/docs/${hit._source.Numero}.htm`}
+                            >
+                                <p className="panel-resultados-titulo">
+                                    {hit._source.title}
+                                </p>
+                                <p className="panel-resultados-epigrafe">
+                                    {hit._source.Epigrafe}
+                                </p>
+                                <p className="panel-resultados-meta">
+                                    {hit._source.Entidad} · {hit._source.Year}
+                                </p>
+                            </Link>
+                        ))}
+                    </div>
+                ) : (
+                    <>
+                        <NoResults bottom={false} visible/>
+                    </>
+                )}
+
             </div>
         )}
     </>
